@@ -1,0 +1,195 @@
+<html>
+    <head>
+        <title>speech text</title>
+    </head>
+    <style>
+        * {
+  box-sizing: border-box;
+}
+
+body {
+  background: #ff6700 ;
+  color: #fff;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#mic{
+    height:200px;
+    width:200px;
+    
+}
+
+#mice{
+    height:200px;
+    width:200px;
+    animation:shrink 0.5s ease;
+    animation-iteration-count: 20;
+    animation-delay: 1.5s;
+}
+
+button{
+    background-color:black;
+    
+    color:white;
+    border:0;
+    border-radius: 8px;
+    font-size:16px;
+    position:absolute;
+    top:80%;
+    right:45%;
+    padding:8px;
+    cursor:pointer;
+}
+
+button:active{
+    transform: scale(0.98);
+}
+
+#text{
+    height:150px;
+    width:500px;
+    background-color:#2C3539;
+    margin:  black;
+    border: black;
+   margin:30px 0;
+    border-radius: 10px;
+    font-size: 20px;
+    color:#ff6700;
+    padding:20px;
+
+}
+
+ select{
+    height:25px;
+    width:500px;
+    color:#ff6700;
+    background-color: black;
+    border-radius: 10px;
+    font-size:12px;
+    border:0;
+    position:absolute;
+    top:50%;
+}
+
+h2{
+    color:black;
+}
+
+@keyframes shrink{
+    0%,
+    100%
+    {
+        transform:scale(0.80);
+    }
+
+    50%{
+        transform:scale(1);
+    }
+}
+
+
+    </style>
+    <body>
+        <div class="container">
+            <h2>Speech Text Reader</h2>
+            <img src="C:\Users\hp\Desktop\mic.png" id="mic">
+            <div id="text-box">
+                <div id="close" class="close"></div>
+                <h3>Choose Voices</h3>
+                <select id="voices"></select>
+                <textarea id="text" placeholder="Enter the Text..."></textarea>
+                <button id="read">Read Text</button>
+
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            
+            const main = document.querySelector('main');
+            const voicesSelect = document.getElementById('voices');
+            const textarea = document.getElementById('text');
+            const readBtn = document.getElementById('read');
+            const image=document.querySelector("img");
+           
+            let voices = [];
+
+function getVoices() {
+  voices = speechSynthesis.getVoices();
+
+  voices.forEach(voice => {
+    const option = document.createElement('option');
+
+    option.value = voice.name;
+    option.innerText = `${voice.name} ${voice.lang}`;
+
+    voicesSelect.appendChild(option);
+  });
+}
+            speechSynthesis.addEventListener("voiceschanged",getVoices)
+
+getVoices();
+
+            const message =new SpeechSynthesisUtterance();
+            function getmesssage(text){
+                message.text=text;
+            }
+
+            function speaktext(){
+                speechSynthesis.speak(message);
+            }
+            voicesSelect.addEventListener("change",setvoices);
+
+            function setvoices(e){
+                message.voice=voices.find(voice=>voice.name===e.target.value);
+            }
+
+            readBtn.addEventListener("click",()=>{
+                getmesssage(textarea.value);
+                speaktext();
+            });
+
+           
+            image.addEventListener("dblclick",()=>{
+                image.id="mic";
+            })
+
+            window.SpeechRecognition=window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition=new window.SpeechRecognition;
+
+           image.addEventListener("click",()=>{
+            
+            recognition.start()
+             image.id="mice"; 
+           }) ;
+           image.addEventListener("dblclick",recognition.stop());
+
+           //recognition.addEventListener("result",onspeak());
+           recognition.addEventListener('result', onSpeak);
+
+           
+
+           function onSpeak(e){
+             
+             const msg=e.results[0][0].transcript;
+             console.log(msg);
+
+             textarea.innerText=`${msg}`;
+
+               
+           }
+           
+
+
+        </script>
+    </body>
+    
+
+</html>
